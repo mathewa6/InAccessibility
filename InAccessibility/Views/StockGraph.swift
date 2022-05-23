@@ -11,7 +11,7 @@ struct StockGraph: View {
     
     let stock: Stock
     
-    let points: [Int] = [10, 20, 30, 40, 30,25,44]
+    let points: [Int] = [10, 20, 30, 40, 30, 25, 44]
     
     @State var bigCircles = true
     @State var showDots = false

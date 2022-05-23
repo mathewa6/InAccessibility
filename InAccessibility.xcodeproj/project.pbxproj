@@ -41,7 +41,7 @@
 /* Begin PBXFileReference section */
 		C26AD61D283672CC0066CA01 /* InAccessibility.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = InAccessibility.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C26AD620283672CC0066CA01 /* InAccessibilityApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAccessibilityApp.swift; sourceTree = "<group>"; };
-		C26AD622283672CC0066CA01 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		C26AD622283672CC0066CA01 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; usesTabs = 0; };
 		C26AD624283672CD0066CA01 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C26AD627283672CD0066CA01 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		C26AD62D283672CD0066CA01 /* InAccessibilityTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = InAccessibilityTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -90,6 +90,7 @@
 				C26AD61E283672CC0066CA01 /* Products */,
 			);
 			sourceTree = "<group>";
+			usesTabs = 0;
 		};
 		C26AD61E283672CC0066CA01 /* Products */ = {
 			isa = PBXGroup;

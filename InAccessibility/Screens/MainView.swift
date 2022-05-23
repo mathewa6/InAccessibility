@@ -29,17 +29,25 @@ struct MainView: View {
     
     var favoriteStocksSection: some View {
         Section {
+            
             ForEach(Stock.favorites()) { stock in
+                
                 StockCell(stock: stock)
                     .contentShape(Rectangle())
                     .onTapGesture {
                         showDetailStock = stock
                     }
+                
             }
         } header: {
             HStack {
-                Text("Favorite Stocks")
+               
+                // Since the header says Stocks,
+                // we can remove the redundant "stocks" here
+                Text("Favorites")
+                
                 Spacer()
+                
                 Button {
                     
                 } label: {
@@ -55,25 +63,37 @@ struct MainView: View {
     
     var allStocksSection: some View {
         Section {
-            ForEach(Stock.all()) { stock in
+            
+            ForEach( Stock.all() ) { stock in
+                
                 StockCell(stock: stock)
                     .contentShape(Rectangle())
                     .onTapGesture {
                         showDetailStock = stock
                     }
+                
             }
+            
         } header: {
-            Text("All Stocks")
+            Text("All")
         }
     }
     
     var toolbarItems: some ToolbarContent {
         Group {
-            ToolbarItem(placement: .navigationBarLeading) {
+            // Move the Settings button to trailing
+            // (The leading is typically where a back button goes)
+            ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
                     
                 } label: {
-                    Image(systemName: "gearshape.fill")
+                    HStack(spacing: 4) {
+                        Image(systemName: "gearshape.fill")
+                            .accessibilityHidden(true)
+                        Text("Customize")
+                    }
+                    .accessibilityElement(children: .combine)
+                    
                 }
             }
             
