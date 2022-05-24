@@ -9,9 +9,51 @@ import SwiftUI
 
 struct MainView: View {
     
+    /// Formerly ContentSizeCategory
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize: DynamicTypeSize
+    
     @State var showDetailStock: Stock?
     
+    // --- Model ---
+    // Keep the stock lists as states
+    // to prevent sudden flickering on the simulated timer
+    @State var favorites: [Stock] = Stock.favorites()
+    @State var all: [Stock] = Stock.all()
+    
+    // --- Timer/Auto updating ---
+    // Simulate a minute based refresh
+    let timer = Timer.publish(every: 60,
+                              on: .main,
+                              in: .common).autoconnect()
+    @State var lastUpdatedTimestamp: Date = .init()
+    @State var currentTimestamp: Date = .init()
+    
+    /// The number of minutes since the last refresh
+    /// (by the user or automatic)
+    /// Intended to fill in the format
+    /// ```"Updated: \(intervalMinutes) ago."```
+    private var intervalMinutes: String {
+        let minuteCount: Int = Calendar.current
+            .dateComponents([.minute],
+                            from: lastUpdatedTimestamp,
+                            to: currentTimestamp)
+            .minute ?? 0
+        
+        if minuteCount < 1 {
+            return "less than a minute"
+        } else if minuteCount == 1 {
+            return "a minute"
+        } else if minuteCount > 1 {
+            return "\(minuteCount) minutes"
+        } else {
+            return "an unknown while"
+        }
+        
+    }
+    
+    // --- Views ---
     var body: some View {
+        
         NavigationView {
             List {
                 favoriteStocksSection
@@ -24,13 +66,20 @@ struct MainView: View {
             .sheet(item: $showDetailStock) { stock in
                 DetailView(stock: stock)
             }
+            .refreshable {
+                favorites = Stock.favorites()
+                all = Stock.all()
+                
+                lastUpdatedTimestamp = Date()
+            }
         }
+        
     }
     
     var favoriteStocksSection: some View {
         Section {
             
-            ForEach(Stock.favorites()) { stock in
+            ForEach(favorites) { stock in
                 
                 StockCell(stock: stock)
                     .contentShape(Rectangle())
@@ -56,7 +105,32 @@ struct MainView: View {
                 
             }
         } footer: {
-            Text("Favorite stocks are updated every 1 minute.")
+            
+            Group {
+                // Re-phrasing the footer text
+                // to state what *has* happened and defer control to
+                // the reader. The original copy stated what
+                // *should* happen, but is ambiguous as to
+                // the current state
+                if dynamicTypeSize >= .accessibility4 {
+                    
+                    // For larger accessibility sizes, spacers
+                    // prevent clipping and overlap of footer
+                    VStack {
+                        Spacer()
+                        Text("Last updated: \(intervalMinutes) ago.")
+                        Spacer()
+                    }
+                } else {
+                    Text("Last updated: \(intervalMinutes) ago.")
+                }
+                
+            }
+            .onReceive(timer) { date in
+                currentTimestamp = date
+            }
+
+            
         }
         
     }
@@ -64,7 +138,7 @@ struct MainView: View {
     var allStocksSection: some View {
         Section {
             
-            ForEach( Stock.all() ) { stock in
+            ForEach( all ) { stock in
                 
                 StockCell(stock: stock)
                     .contentShape(Rectangle())
