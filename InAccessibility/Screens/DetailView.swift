@@ -15,11 +15,11 @@ enum AlertItem: String, Identifiable {
 }
 struct DetailView: View {
     
-    let stock: Stock
+    @Environment(\.presentationMode) var presentationMode
+
     @State var selectedAlertItem: AlertItem?
     
-
-    
+    let stock: Stock
     
     var body: some View {
         NavigationView {
@@ -29,6 +29,13 @@ struct DetailView: View {
                 buttons
             }
             .padding(.horizontal)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                }
+            }
             
             Text("Detailview")
                 .navigationTitle(stock.name)
@@ -40,6 +47,10 @@ struct DetailView: View {
                 return Alert(title: Text("Thanks for favoriting (but not really)!"))
             }
         })
+        .accessibilityAction(.escape) {
+            presentationMode.wrappedValue.dismiss()
+        }
+        
     }
     
     var companyInfo: some View {

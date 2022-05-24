@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		97DE9E0F283C837300BFD822 /* AddView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97DE9E0E283C837300BFD822 /* AddView.swift */; };
+		97DE9E11283C86B600BFD822 /* CustomizeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97DE9E10283C86B600BFD822 /* CustomizeView.swift */; };
 		C26AD621283672CC0066CA01 /* InAccessibilityApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C26AD620283672CC0066CA01 /* InAccessibilityApp.swift */; };
 		C26AD623283672CC0066CA01 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C26AD622283672CC0066CA01 /* MainView.swift */; };
 		C26AD625283672CD0066CA01 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C26AD624283672CD0066CA01 /* Assets.xcassets */; };
@@ -39,6 +41,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		97DE9E0E283C837300BFD822 /* AddView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddView.swift; sourceTree = "<group>"; };
+		97DE9E10283C86B600BFD822 /* CustomizeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomizeView.swift; sourceTree = "<group>"; };
 		C26AD61D283672CC0066CA01 /* InAccessibility.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = InAccessibility.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C26AD620283672CC0066CA01 /* InAccessibilityApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAccessibilityApp.swift; sourceTree = "<group>"; };
 		C26AD622283672CC0066CA01 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; usesTabs = 0; };
@@ -144,7 +148,9 @@
 			isa = PBXGroup;
 			children = (
 				C26AD622283672CC0066CA01 /* MainView.swift */,
+				97DE9E0E283C837300BFD822 /* AddView.swift */,
 				C26AD6552836E24E0066CA01 /* DetailView.swift */,
+				97DE9E10283C86B600BFD822 /* CustomizeView.swift */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -301,6 +307,8 @@
 				C26AD621283672CC0066CA01 /* InAccessibilityApp.swift in Sources */,
 				C26AD6542836E22A0066CA01 /* StockPrice.swift in Sources */,
 				C26AD6562836E24E0066CA01 /* DetailView.swift in Sources */,
+				97DE9E11283C86B600BFD822 /* CustomizeView.swift in Sources */,
+				97DE9E0F283C837300BFD822 /* AddView.swift in Sources */,
 				C26AD6522836E2170066CA01 /* StockGraph.swift in Sources */,
 				C26AD6502836E1D50066CA01 /* Stock.swift in Sources */,
 				C26AD64D2836E1BC0066CA01 /* StockCell.swift in Sources */,

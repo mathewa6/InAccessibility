@@ -12,13 +12,15 @@ struct MainView: View {
     /// Formerly ContentSizeCategory
     @Environment(\.dynamicTypeSize) var dynamicTypeSize: DynamicTypeSize
     
-    @State var showDetailStock: Stock?
+    @State private var showDetailStock: Stock?
+    @State private var showCustomize: Bool = false
+    @State private var showAddStock: Bool = false
+
     
     // --- Model ---
     // Keep the stock lists as states
     // to prevent sudden flickering on the simulated timer
     @State var favorites: [Stock] = Stock.favorites()
-    @State var all: [Stock] = Stock.all()
     
     // --- Timer/Auto updating ---
     // Simulate a minute based refresh
@@ -57,7 +59,6 @@ struct MainView: View {
         NavigationView {
             List {
                 favoriteStocksSection
-                allStocksSection
             }
             .navigationTitle("Stocks")
             .toolbar(content: {
@@ -68,7 +69,6 @@ struct MainView: View {
             }
             .refreshable {
                 favorites = Stock.favorites()
-                all = Stock.all()
                 
                 lastUpdatedTimestamp = Date()
             }
@@ -89,21 +89,10 @@ struct MainView: View {
                 
             }
         } header: {
-            HStack {
-               
-                // Since the header says Stocks,
-                // we can remove the redundant "stocks" here
-                Text("Favorites")
-                
-                Spacer()
-                
-                Button {
-                    
-                } label: {
-                    Text("Tap for more")
-                }
-                
-            }
+            // Since the header says Stocks,
+            // we can remove the redundant "stocks" here
+            Text("Favorites")
+            
         } footer: {
             
             Group {
@@ -135,31 +124,14 @@ struct MainView: View {
         
     }
     
-    var allStocksSection: some View {
-        Section {
-            
-            ForEach( all ) { stock in
-                
-                StockCell(stock: stock)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        showDetailStock = stock
-                    }
-                
-            }
-            
-        } header: {
-            Text("All")
-        }
-    }
-    
     var toolbarItems: some ToolbarContent {
         Group {
-            // Move the Settings button to trailing
-            // (The leading is typically where a back button goes)
-            ToolbarItem(placement: .navigationBarTrailing) {
+            // Move the Settings button and add/more
+            // (The leading top position is typically where a back button goes)
+            
+            ToolbarItemGroup(placement: .bottomBar) {
                 Button {
-                    
+                    showCustomize.toggle()
                 } label: {
                     HStack(spacing: 4) {
                         Image(systemName: "gearshape.fill")
@@ -167,12 +139,36 @@ struct MainView: View {
                         Text("Customize")
                     }
                     .accessibilityElement(children: .combine)
+                    .sheet(isPresented: $showCustomize) {
+                        CustomizeView(showCustomize: $showCustomize)
+                    }
                     
+                }
+
+                Spacer()
+                
+                Button {
+                    showAddStock.toggle()
+                } label: {
+                    
+                    HStack {
+                        Image(systemName: "plus")
+                            .accessibilityHidden(true)
+                        Text("Add")
+                    }
+                    .accessibilityElement(children: .combine)
+                    
+                }
+                .buttonStyle(.borderedProminent)
+                .buttonBorderShape(.roundedRectangle)
+                .sheet(isPresented: $showAddStock) {
+                    AllStockView(showAddStock: $showAddStock)
                 }
             }
             
         }
     }
+    
 }
 
 struct ContentView_Previews: PreviewProvider {
