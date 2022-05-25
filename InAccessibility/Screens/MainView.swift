@@ -86,8 +86,49 @@ struct MainView: View {
                     .onTapGesture {
                         showDetailStock = stock
                     }
+                    .contextMenu {
+                        // The context menu should allow for the same functionality
+                        // as swiping. This again mirrors system app functioning
+                        // but also allows those with mild tremors to not
+                        // need to swipe to unfavorite
+                        Button {
+                            
+                        } label: {
+                            Label("Info", systemImage: "info.circle")
+                        }
+                        
+                        Button {
+                            
+                            withAnimation(.default) {
+                                favorites.removeAll { $0.name == stock.name }
+                            }
+                            
+                        } label: {
+                            Label("Unfavorite", systemImage: "star.slash")
+                        }
+                        
+                    }
+                    .swipeActions(allowsFullSwipe: true) {
+                        // If we only wanted to support VoiceOver
+                        // This could be accomplished with a
+                        // .accesibilityAction. However, using .swipeAction allows for
+                        // system convention across all modalities
+                        // (and free VO support)
+                        Button(role: .destructive) {
+                            
+                            withAnimation(.default) {
+                                favorites.removeAll { $0.name == stock.name }
+                            }
+                            
+                        } label: {
+                            // VO uses this for the "free" accessibilityAction
+                            Label("Unfavorite", systemImage: "star.slash")
+                        }
+                        
+                    }
                 
             }
+
         } header: {
             // Since the header says Stocks,
             // we can remove the redundant "stocks" here
@@ -118,7 +159,6 @@ struct MainView: View {
             .onReceive(timer) { date in
                 currentTimestamp = date
             }
-
             
         }
         
@@ -168,7 +208,7 @@ struct MainView: View {
             
         }
     }
-    
+        
 }
 
 struct ContentView_Previews: PreviewProvider {
