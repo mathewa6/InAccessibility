@@ -22,24 +22,13 @@ struct DetailView: View {
     let stock: Stock
     
     var body: some View {
-        NavigationView {
-            VStack(alignment: .leading, spacing: 16) {
-                companyInfo
-                description
-                buttons
-            }
-            .padding(.horizontal)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
-                        presentationMode.wrappedValue.dismiss()
-                    }
-                }
-            }
-            
-            Text("Detailview")
-                .navigationTitle(stock.name)
+        VStack(alignment: .leading, spacing: 16) {
+            companyInfo
+            description
+            buttons
         }
+        .padding(.horizontal)
+        .navigationTitle(stock.name)
         .alert(item: $selectedAlertItem, content: { item in
             if item == .share {
                 return Alert(title: Text("Thanks for sharing!"))

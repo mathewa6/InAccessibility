@@ -19,12 +19,15 @@ struct AllStockView: View {
         Section {
             
             ForEach( all ) { stock in
-                
-                StockCell(stock: stock)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        showDetailStock = stock
-                    }
+
+                NavigationLink(destination: DetailView(stock: stock)) {
+
+                    StockCell(stock: stock)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            showDetailStock = stock
+                        }
+                }
                 
             }
             
@@ -46,9 +49,6 @@ struct AllStockView: View {
                         showAddStock.toggle()
                     }
                 }
-            }
-            .sheet(item: $showDetailStock) { stock in
-                DetailView(stock: stock)
             }
             .accessibilityAction(.escape) {
                 showAddStock.toggle()

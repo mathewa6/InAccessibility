@@ -85,9 +85,6 @@ struct MainView: View {
             .toolbar(content: {
                 toolbarItems
             })
-            .sheet(item: $showDetailStock) { stock in
-                DetailView(stock: stock)
-            }
             .refreshable {
                 favorites = Stock.favorites()
                 
@@ -95,7 +92,7 @@ struct MainView: View {
             }
         }
         // TODO: Allow sorting in increasing and decreasing orders
-        // Picker doesn't allow re-tapping to change a value
+        // Picker doesn't allow re-tapping to change a value. C'mon SwiftUI...
         .onChange(of: menuSortSelection) { newValue in
             favorites.sort { sort(order: SortOrder(rawValue: newValue),
                                   stockA: $0,
@@ -108,52 +105,57 @@ struct MainView: View {
         Section {
             
             ForEach(favorites) { stock in
-                
-                StockCell(stock: stock)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        showDetailStock = stock
-                    }
-                    .contextMenu {
-                        // The context menu should allow for the same functionality
-                        // as swiping. This again mirrors system app functioning
-                        // but also allows those with mild tremors to not
-                        // need to swipe to unfavorite
-                        Button {
-                            
-                        } label: {
-                            Label("Info", systemImage: "info.circle")
+
+                NavigationLink(destination: DetailView(stock: stock)) {
+
+                    StockCell(stock: stock)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            showDetailStock = stock
                         }
-                        
-                        Button {
-                            
-                            withAnimation(.default) {
-                                favorites.removeAll { $0.name == stock.name }
+                        .contextMenu {
+                            // The context menu should allow for the same functionality
+                            // as swiping. This again mirrors system app functioning
+                            // but also allows those with mild tremors to not
+                            // need to swipe to unfavorite
+                            Button {
+
+                            } label: {
+                                Label("Info", systemImage: "info.circle")
                             }
-                            
-                        } label: {
-                            Label("Unfavorite", systemImage: "star.slash")
-                        }
-                        
-                    }
-                    .swipeActions(allowsFullSwipe: true) {
-                        // If we only wanted to support VoiceOver
-                        // This could be accomplished with a
-                        // .accesibilityAction. However, using .swipeAction allows for
-                        // system convention across all modalities
-                        // (and free VO support)
-                        Button(role: .destructive) {
-                            
-                            withAnimation(.default) {
-                                favorites.removeAll { $0.name == stock.name }
+
+                            Button {
+
+                                withAnimation(.default) {
+                                    favorites.removeAll { $0.name == stock.name }
+                                }
+
+                            } label: {
+                                Label("Unfavorite", systemImage: "star.slash")
                             }
-                            
-                        } label: {
-                            // VO uses this for the "free" accessibilityAction
-                            Label("Unfavorite", systemImage: "star.slash")
+
                         }
-                        
-                    }
+                        .swipeActions(allowsFullSwipe: true) {
+                            // If we only wanted to support VoiceOver
+                            // This could be accomplished with a
+                            // .accesibilityAction. However, using .swipeAction allows for
+                            // system convention across all modalities
+                            // (and free VO support)
+                            Button(role: .destructive) {
+
+                                withAnimation(.default) {
+                                    favorites.removeAll { $0.name == stock.name }
+                                }
+
+                            } label: {
+                                // VO uses this for the "free" accessibilityAction
+                                Label("Unfavorite", systemImage: "star.slash")
+                            }
+
+                        }
+
+                }
+
                 
             }
 
