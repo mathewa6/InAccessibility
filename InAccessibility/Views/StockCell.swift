@@ -47,6 +47,7 @@ struct StockCell: View {
             Alert(title: Text(stock.name), message: Text("The stock price for \(stock.name) (\(stock.shortName)) is \(stock.stockPrice)."), dismissButton: .cancel())
         }
     }
+    
 }
 
 struct StockCell_Previews: PreviewProvider {
