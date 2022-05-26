@@ -7,42 +7,94 @@
 
 import SwiftUI
 
+struct StockGraphPath: Shape {
+    let points: [Double]
+
+    func path(in rect: CGRect) -> Path {
+        guard
+            !points.isEmpty,
+            let max = points.max() else { return .init() }
+
+        let normalizedPoints = points.map { $0/(max + 5) }
+
+        let xIncrement = (rect.width / (CGFloat(points.count) - 1))
+        var path = Path()
+        path.move(to: CGPoint(x: 0.0,
+                              y: (1.0 - normalizedPoints[0]) * Double(rect.height)))
+        for i in 1..<points.count {
+            let pt = CGPoint(x: (Double(i) * Double(xIncrement)),
+                             y: (1.0 - normalizedPoints[i]) * Double(rect.height))
+            path.addLine(to: pt)
+            path.move(to: pt)
+
+        }
+        return path
+    }
+}
+
+struct StockGraphPoints: Shape {
+    let points: [Double]
+
+    func path(in rect: CGRect) -> Path {
+        guard
+            !points.isEmpty,
+            let max = points.max() else { return .init() }
+
+        let normalizedPoints = points.map { $0/(max + 5) }
+        let size = CGSize(width: rect.width/15, height: rect.width/15)
+
+        let xIncrement = (rect.width / (CGFloat(points.count) - 1))
+        var path = Path()
+        path.move(to: CGPoint(x: 0.0,
+                              y: (1.0 - normalizedPoints[0]) * Double(rect.height)))
+        for i in 0..<points.count {
+            let pt = CGPoint(x: (Double(i) * Double(xIncrement)),
+                             y: (1.0 - normalizedPoints[i]) * Double(rect.height))
+            path.move(to: pt)
+            path.addEllipse(in: CGRect(origin: .init(x: pt.x - size.width/2,
+                                                     y: pt.y - size.height/2),
+                                       size: size))
+
+        }
+        return path
+    }
+}
+
 struct StockGraph: View {
     
     let stock: Stock
     
     let points: [Int] = [10, 20, 30, 40, 30, 25, 44]
-    
-    @State var bigCircles = true
-    @State var showDots = false
-    
+
+    /// Converts point to Doubles and generates a negative trend
+    /// set of points if necessary
+    var graphData: [Double] {
+        points.map { Double(stock.goingUp ? $0 : (points.max() ?? 0) - $0) }
+    }
+
     var body: some View {
-        ZStack {
-            Color.black.opacity(0.9)
-                .cornerRadius(7)
-                .frame(width: 100, height: 50)
-            
-            HStack(spacing: bigCircles ? 2 : 8) {
-                ForEach(points, id: \.self) { point in
-                    Circle()
-                        .frame(width: bigCircles ? 10 : 4, height: bigCircles ? 10 : 4)
-                        .foregroundColor(stock.goingUp ? .green : .red)
-                        .offset(y: CGFloat(stock.goingUp ? -point : point) * 0.3)
-                }
+        ZStack(alignment: .leading) {
+
+            // Present an image representation of overall trend
+            // to supplement custom color choices
+            Image(systemName: stock.goingUp ? "arrow.up.square" : "arrow.down.square")
+                .font(.callout)
+                .foregroundStyle(.tertiary)
+
+
+            Group {
+                StockGraphPath(points: graphData)
+                    .stroke(stock.goingUp ? .green : .red, lineWidth: 2)
+
+                StockGraphPoints(points: graphData)
+                    .foregroundColor(stock.goingUp ? .green : .red)
             }
-            .opacity(showDots ? 1 : 0)
-            .offset(y: showDots ? 0 : 12)
-            .animation(.default, value: showDots)
+            .padding(.all)
+
         }
-        .onAppear {
-            showDots = true
-            bigCircles.toggle()
-        }
-        .onTapGesture {
-            withAnimation(.spring()) {
-                bigCircles.toggle()
-            }
-        }
+        // This helps keep the graph proportional, even when rotated/scaled
+        .aspectRatio((16/9.0), contentMode: .fit)
+
     }
 }
 

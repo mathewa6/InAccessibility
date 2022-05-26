@@ -12,35 +12,47 @@ struct StockCell: View {
     let stock: Stock
     
     @State var showInfo = false
-    
+
     var body: some View {
         HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                HStack {
+            HStack {
+                VStack(alignment: .leading) {
+
+
                     Text(stock.shortName)
-                        .font(.system(size: 17))
+                        .font(.title3)
                         .bold()
-                    
-                    Image("info-icon")
-                        .resizable()
-                        .frame(width: 16, height: 16)
-                        .onTapGesture {
-                            showInfo = true
-                        }
-                    
-                    Image(systemName: "star.fill")
-                        .foregroundColor(.yellow)
-                        .opacity(stock.favorite ? 1 : 0)                        
+
+                    Text(stock.name)
+                        .foregroundStyle(.secondary)
+                        .font(.system(.caption))
                 }
-                Text(stock.name)
-                    .opacity(0.5)
-                    .font(.system(size: 11))
+
+                Spacer()
+                Divider()
+            }
+            //  This keeps all names aligned even with extra long titles
+            .frame(alignment: .leading)
+            .alignmentGuide(.leading) { $0[.leading] }
+
+
+            HStack {
+
+                StockGraph(stock: stock)
+
             }
             
-            Spacer()
-                
-            StockGraph(stock: stock)
+
             StockPrice(stock: stock)
+
+
+            Image(systemName: "info.circle")
+                .font(.body)
+                .foregroundStyle(.secondary)
+                .onTapGesture {
+                    showInfo = true
+                }
+
         }
         .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 8))
         .alert(isPresented: $showInfo) {

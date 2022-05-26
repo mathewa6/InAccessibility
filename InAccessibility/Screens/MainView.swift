@@ -31,7 +31,6 @@ struct MainView: View {
     @State private var showCustomize: Bool = false
     @State private var showAddStock: Bool = false
 
-
     /// The user chosen sort order for stocks
     @State private var menuSortSelection: Int = 0
 
@@ -80,7 +79,7 @@ struct MainView: View {
             List {
                 favoriteStocksSection
             }
-            .navigationTitle("Stocks")
+            .navigationTitle("Watchlists")
             .toolbar(content: {
                 toolbarItems
             })
@@ -132,27 +131,27 @@ struct MainView: View {
                             }
 
                         }
-                        .swipeActions(allowsFullSwipe: true) {
-                            // If we only wanted to support VoiceOver
-                            // This could be accomplished with a
-                            // .accesibilityAction. However, using .swipeAction allows for
-                            // system convention across all modalities
-                            // (and free VO support)
-                            Button(role: .destructive) {
 
-                                withAnimation(.default) {
-                                    favorites.removeAll { $0.name == stock.name }
-                                }
-
-                            } label: {
-                                // VO uses this for the "free" accessibilityAction
-                                Label("Unfavorite", systemImage: "star.slash")
-                            }
-
-                        }
 
                 }
+                .swipeActions(allowsFullSwipe: true) {
+                    // If we only wanted to support VoiceOver
+                    // This could be accomplished with a
+                    // .accesibilityAction. However, using .swipeAction allows for
+                    // system convention across all modalities
+                    // (and free VO support)
+                    Button(role: .destructive) {
 
+                        withAnimation(.default) {
+                            favorites.removeAll { $0.name == stock.name }
+                        }
+
+                    } label: {
+                        // VO uses this for the "free" accessibilityAction
+                        Label("Unfavorite", systemImage: "star.slash")
+                    }
+
+                }
                 
             }
 
