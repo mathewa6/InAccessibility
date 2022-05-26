@@ -22,11 +22,10 @@ struct AllStockView: View {
 
                 NavigationLink(destination: DetailView(stock: stock)) {
 
+                    // Removed contentShape and onTapGesture to
+                    // allow more generous and system-like tap behavior
                     StockCell(stock: stock)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            showDetailStock = stock
-                        }
+                    
                 }
                 
             }

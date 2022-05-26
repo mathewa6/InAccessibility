@@ -28,7 +28,6 @@ struct MainView: View {
     /// Formerly ContentSizeCategory
     @Environment(\.dynamicTypeSize) var dynamicTypeSize: DynamicTypeSize
     
-    @State private var showDetailStock: Stock?
     @State private var showCustomize: Bool = false
     @State private var showAddStock: Bool = false
 
@@ -108,11 +107,9 @@ struct MainView: View {
 
                 NavigationLink(destination: DetailView(stock: stock)) {
 
+                    // Removed contentShape and onTapGesture to
+                    // allow more generous and system-like tap behavior
                     StockCell(stock: stock)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            showDetailStock = stock
-                        }
                         .contextMenu {
                             // The context menu should allow for the same functionality
                             // as swiping. This again mirrors system app functioning
