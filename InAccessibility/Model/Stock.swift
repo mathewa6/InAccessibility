@@ -28,7 +28,7 @@ struct Stock: Identifiable {
         let goingUp = Bool.random()
         self.goingUp = goingUp
         
-        self.change = goingUp ? -Double.random(in: 3.12...149.44) : Double.random(in: 3.00...149.34)
+        self.change = goingUp ? Double.random(in: 3.12...149.44) : -Double.random(in: 3.00...149.34)
         
     }
     
