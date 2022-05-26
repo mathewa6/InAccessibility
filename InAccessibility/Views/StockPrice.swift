@@ -14,9 +14,9 @@ struct StockPrice: View {
     var body: some View {
         VStack(alignment: .trailing, spacing: 2) {
             Text("\(String(format: "%.2f",stock.stockPrice))")
-            
-            Text("\(String(format: "%.2f",stock.change))")
-            
+
+            // Add a + or - here to indicate the direction of change
+            Text("\(String(format: "\(stock.goingUp ? "+" : "-")%.2f",stock.change))")
                 .bold()
                 .font(.caption)
                 .padding(4)

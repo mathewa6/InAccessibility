@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// A very barebones imitation of a line graph
 struct StockGraphPath: Shape {
     let points: [Double]
 
@@ -32,6 +33,9 @@ struct StockGraphPath: Shape {
     }
 }
 
+
+/// A shape to replicate the point-like design of the original project
+/// Intended to be used in combination with the ```StockGraphPath``` shape
 struct StockGraphPoints: Shape {
     let points: [Double]
 
@@ -61,7 +65,12 @@ struct StockGraphPoints: Shape {
 }
 
 struct StockGraph: View {
-    
+
+
+    /// A variable to decide when to show more graphical detail
+    /// either in accessibilityTextSizes or in DetailView
+    @State var showDetails: Bool
+
     let stock: Stock
     
     let points: [Int] = [10, 20, 30, 40, 30, 25, 44]
@@ -84,10 +93,12 @@ struct StockGraph: View {
 
             Group {
                 StockGraphPath(points: graphData)
-                    .stroke(stock.goingUp ? .green : .red, lineWidth: 2)
+                    .stroke(stock.goingUp ? .green : .red, lineWidth: 3)
 
-                StockGraphPoints(points: graphData)
-                    .foregroundColor(stock.goingUp ? .green : .red)
+                if showDetails {
+                    StockGraphPoints(points: graphData)
+                        .foregroundColor(stock.goingUp ? .green : .red)
+                }
             }
             .padding(.all)
 
@@ -100,6 +111,6 @@ struct StockGraph: View {
 
 struct StockGraph_Previews: PreviewProvider {
     static var previews: some View {
-        StockGraph(stock: .example())
+        StockGraph(showDetails: true, stock: .example())
     }
 }

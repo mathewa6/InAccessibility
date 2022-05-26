@@ -14,21 +14,25 @@ enum AlertItem: String, Identifiable {
     var id: String { self.rawValue }
 }
 struct DetailView: View {
-    
+
+    // This is useful to dismiss via accessibilityAction if in a modal
     @Environment(\.presentationMode) var presentationMode
+    // This allows us to change the layout based on orientation
+    // to keep the buttons (hopefully) within reach
+    @Environment(\.verticalSizeClass) var verticalSizeClass: UserInterfaceSizeClass?
 
     @State var selectedAlertItem: AlertItem?
-    
+
     let stock: Stock
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+
+        VStack(alignment: .leading) {
             companyInfo
             description
             buttons
         }
         .padding(.horizontal)
-        .navigationTitle(stock.name)
         .alert(item: $selectedAlertItem, content: { item in
             if item == .share {
                 return Alert(title: Text("Thanks for sharing!"))
@@ -39,60 +43,75 @@ struct DetailView: View {
         .accessibilityAction(.escape) {
             presentationMode.wrappedValue.dismiss()
         }
-        
+        .accessibilityAction(.magicTap) {
+            // Since we only have one primary action on this page
+            // it wouldn't hurt to allow a VO user familiar with the
+            // UI to just magic tap
+            selectedAlertItem = .favorite
+        }
+        .toolbar {
+            // Presenting a share button and a favorite at the bottom
+            // isn't platform convention and hence puts the user in a
+            // position of choice each time they view the page
+            // Moving the share button to a toolbar where it is more
+            // likely to occur in other apps and keeping one primary
+            // button aids clarity esp. for those with cognitive/focus impairment
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    selectedAlertItem = .share
+                } label: {
+                    Label("Share", systemImage: "square.and.arrow.up")
+                }
+
+            }
+        }
+
     }
     
     var companyInfo: some View {
         HStack {
             VStack(alignment: .leading) {
-                Text("Company Name")
-                    .font(.subheadline)
                 Text(stock.name)
-                    .font(.system(size: 24))
+                    .font(.title2)
                     .bold()
                 Text(stock.shortName)
-                    .font(.system(size: 12))
+                    .font(.subheadline)
+
+                Spacer()
+
+                StockGraph(showDetails: true, stock: stock)
+                
+                Spacer()
+
+
             }
             
-            Spacer()
-            StockGraph(stock: stock)
+//            0, 136, 15
+//            221, 51, 34
         }
     }
     
     var description: some View {
         VStack(alignment: .leading) {
-            Text("Company Description")
-                .font(.subheadline)
-            Text("This is a company that was founded at some point in time by some people with some ideas. The company makes products and they do other things as well. Some of these things go well, some don't. The company employs people, somewhere between 10 and 250.000. The exact amount is not currently available.")
-                .font(.system(size: 22))
+            Text(stock.description)
+                .font(.body)
         }
     }
     
     var buttons: some View {
         VStack {
-            Text("Tap to share")
-                .bold()
-                .font(.title2)
-                .padding()
-                .frame(maxWidth: .infinity, alignment: .center)
-                .background(Color.blue)
-                .cornerRadius(15)
-                .foregroundColor(.white)
-                .onTapGesture {
-                    selectedAlertItem = .share
-                }
-            
-            Text("Favorite")
-                .bold()
-                .font(.title2)
-                .padding()
-                .frame(maxWidth: .infinity, alignment: .center)
-                .background(Color.yellow)
-                .cornerRadius(15)
-                .foregroundColor(.white)
-                .onTapGesture {
-                    selectedAlertItem = .favorite
-                }
+            Button {
+                selectedAlertItem = .favorite
+            } label: {
+                Label("Favorite", systemImage: "star")
+                    .font(.title2)
+                    .padding(.vertical)
+                    .frame(maxWidth: .infinity, alignment: .center)
+            }
+            .buttonStyle(.borderedProminent)
+            .buttonBorderShape(.roundedRectangle)
+            .padding(.all)
+
         }
     }
 }

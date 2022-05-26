@@ -156,9 +156,9 @@ struct MainView: View {
             }
 
         } header: {
-            // Since the header says Stocks,
+            // Since the header says Stocks/Watchlist,
             // we can remove the redundant "stocks" here
-            Text("Favorites")
+            Label("Favorites", systemImage: "star.fill")
             
         } footer: {
             
@@ -167,7 +167,7 @@ struct MainView: View {
                 // to state what *has* happened and defer control to
                 // the reader. The original copy stated what
                 // *should* happen, but is ambiguous as to
-                // the current state
+                // the current state.
                 if dynamicTypeSize >= .accessibility4 {
                     
                     // For larger accessibility sizes, spacers

@@ -15,6 +15,7 @@ struct Stock: Identifiable {
     let goingUp: Bool
     let favorite: Bool
     let change: Double
+    let description: String
     
     
     init(name: String, shortName: String, favorite: Bool) {
@@ -27,9 +28,16 @@ struct Stock: Identifiable {
         
         let goingUp = Bool.random()
         self.goingUp = goingUp
-        
-        self.change = goingUp ? Double.random(in: 3.12...149.44) : -Double.random(in: 3.00...149.34)
-        
+
+        // Change is a "tangible" quantity when it comes to traded assets
+        // (so a negative dollar amount is a tad counter-intuitive)
+        // We already store the direction of change
+        // so this is changed to only generate a random
+        // and the presentation views handle negating changes
+        self.change = Double.random(in: 3.00...149.34)
+
+        // Moved the assett description here instead of the View
+        self.description = "This is a company that was founded at some point in time by some people with some ideas. The company makes products and they do other things as well. Some of these things go well, some don't. The company employs people, somewhere between 10 and 250.000. The exact amount is not currently available."
     }
     
     static func example() -> Stock {

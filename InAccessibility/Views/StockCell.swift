@@ -18,7 +18,6 @@ struct StockCell: View {
             HStack {
                 VStack(alignment: .leading) {
 
-
                     Text(stock.shortName)
                         .font(.title3)
                         .bold()
@@ -31,27 +30,30 @@ struct StockCell: View {
                 Spacer()
                 Divider()
             }
-            //  This keeps all names aligned even with extra long titles
+            // This keeps all names aligned even with extra long titles
             .frame(alignment: .leading)
             .alignmentGuide(.leading) { $0[.leading] }
 
 
             HStack {
 
-                StockGraph(stock: stock)
+                StockGraph(showDetails: false, stock: stock)
 
             }
             
 
             StockPrice(stock: stock)
 
-
-            Image(systemName: "info.circle")
-                .font(.body)
-                .foregroundStyle(.secondary)
-                .onTapGesture {
-                    showInfo = true
-                }
+            // Replace the tappable Image with Buttons
+            // for "free" accessibility modifiers like traits
+            Button {
+                showInfo = true
+            } label: {
+                Label("Info", systemImage: "info.circle")
+                    .font(.body)
+                    .labelStyle(.iconOnly)
+            }
+            .foregroundStyle(.secondary)
 
         }
         .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 8))
