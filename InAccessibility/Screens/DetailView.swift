@@ -21,6 +21,9 @@ struct DetailView: View {
     // to keep the buttons (hopefully) within reach
     @Environment(\.verticalSizeClass) var verticalSizeClass: UserInterfaceSizeClass?
 
+    /// Formerly ContentSizeCategory
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize: DynamicTypeSize
+
     @State var selectedAlertItem: AlertItem?
 
     let stock: Stock
@@ -95,26 +98,52 @@ struct DetailView: View {
 
         VStack(alignment: .leading) {
 
-            HStack {
+            Group {
+                
+                if dynamicTypeSize.isAccessibilitySize {
 
-                VStack(alignment: .leading) {
-                    Text(stock.name)
-                        .font(.title2)
-                        .bold()
-                        .accessibilitySortPriority(3)
-                    // This ensures the title is first focused
-                    // when the view first appears
+                    VStack(alignment: .leading) {
+                        Text(stock.name)
+                            .font(.title2)
+                            .bold()
+                            .accessibilitySortPriority(3)
+                        // This ensures the title is first focused
+                        // when the view first appears
 
-                    Text(stock.shortName)
-                        .font(.subheadline)
-                        .modifier(TickerSymbol(name: stock.shortName))
-                        .accessibilitySortPriority(2)
+                        Text(stock.shortName)
+                            .font(.subheadline)
+                            .modifier(TickerSymbol(name: stock.shortName))
+                            .accessibilitySortPriority(2)
+
+                        Spacer()
+
+                        StockPrice(stock: stock)
+                            .accessibilitySortPriority(1)
+                    }
+
+                } else {
+                    HStack {
+
+                        VStack(alignment: .leading) {
+                            Text(stock.name)
+                                .font(.title2)
+                                .bold()
+                                .accessibilitySortPriority(3)
+                            // This ensures the title is first focused
+                            // when the view first appears
+
+                            Text(stock.shortName)
+                                .font(.subheadline)
+                                .modifier(TickerSymbol(name: stock.shortName))
+                                .accessibilitySortPriority(2)
+                        }
+
+                        Spacer()
+
+                        StockPrice(stock: stock)
+                            .accessibilitySortPriority(1)
+                    }
                 }
-
-                Spacer()
-
-                StockPrice(stock: stock)
-                    .accessibilitySortPriority(1)
             }
             .accessibilityElement(children: .combine)
 

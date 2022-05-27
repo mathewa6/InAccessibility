@@ -98,7 +98,9 @@ struct StockGraph: View {
         }
         // This helps keep the graph proportional, even when rotated/scaled
         .aspectRatio((16/9.0), contentMode: .fit)
-
+        .accessibilityElement()
+        .accessibilityLabel("Stock price for \(stock.name)")
+        .accessibilityChartDescriptor(self)
     }
 }
 
@@ -106,4 +108,44 @@ struct StockGraph_Previews: PreviewProvider {
     static var previews: some View {
         StockGraph(showDetails: true, stock: .example())
     }
+}
+
+
+// A rough outline of audio graph usage
+// TODO: (unfortunately I'm out of time to make the graph work fully)
+extension StockGraph: AXChartDescriptorRepresentable {
+
+    func makeChartDescriptor() -> AXChartDescriptor {
+        let min = graphData.min() ?? 0.0
+        let max = graphData.max() ?? 0.0
+
+        let xAxis = AXCategoricalDataAxisDescriptor(
+            title: "Time",
+            categoryOrder: points.map { "\($0)" }
+        )
+
+        let yAxis = AXNumericDataAxisDescriptor(
+            title: "Price",
+            range: min...max,
+            gridlinePositions: []
+        ) { value in "\(value) points" }
+
+        let series = AXDataSeriesDescriptor(
+            name: "Stock Price",
+            isContinuous: false,
+            dataPoints: graphData.enumerated().map {
+                .init(x: Double($0), y: $1)
+            }
+        )
+
+        return AXChartDescriptor(
+            title: "Stock price for \(stock.name)",
+            summary: nil,
+            xAxis: xAxis,
+            yAxis: yAxis,
+            additionalAxes: [],
+            series: [series]
+        )
+    }
+
 }
