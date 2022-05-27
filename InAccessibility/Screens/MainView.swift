@@ -103,6 +103,22 @@ struct MainView: View {
                     focusedIndex = .list(self.lastSelectedIndex ?? 0)
                 }
             }
+            // The use of rotors allows VO users to quickly skim which stocks
+            // are going up/down, esp if sorted first
+            .accessibilityRotor("Upward trending") {
+                ForEach(favorites, id: \.shortName) { fav in
+                    if fav.goingUp {
+                        AccessibilityRotorEntry(fav.name, id: fav.shortName)
+                    }
+                }
+            }
+            .accessibilityRotor("Downward trending") {
+                ForEach(favorites, id: \.shortName) { fav in
+                    if !fav.goingUp {
+                        AccessibilityRotorEntry(fav.name, id: fav.shortName)
+                    }
+                }
+            }
             .listStyle(.insetGrouped)
             .navigationTitle("Watchlist")
             .toolbar(content: {
@@ -130,7 +146,7 @@ struct MainView: View {
     var favoriteStocksSection: some View {
         Section {
             
-            ForEach(favorites) { stock in
+            ForEach(favorites, id: \.shortName) { stock in
 
                 NavigationLink(destination: DetailView(stock: stock)) {
 
