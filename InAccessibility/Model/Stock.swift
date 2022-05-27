@@ -69,3 +69,7 @@ struct Stock: Identifiable {
         ]
     }
 }
+
+extension Stock: Equatable, Hashable {
+
+}

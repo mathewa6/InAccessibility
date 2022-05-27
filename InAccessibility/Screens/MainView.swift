@@ -23,6 +23,10 @@ enum SortOrder: Int {
     }
 }
 
+enum StockFocusIndex: Hashable {
+    case list(Int)
+}
+
 struct MainView: View {
     
     /// Formerly ContentSizeCategory
@@ -34,6 +38,9 @@ struct MainView: View {
 
     /// The user chosen sort order for stocks
     @State private var menuSortSelection: Int = 0
+
+    @AccessibilityFocusState
+    private var focusedIndex: StockFocusIndex?
 
     
     // --- Model ---
@@ -102,7 +109,11 @@ struct MainView: View {
                                   stockB: $1,
                                   isIncreasing: true) }
         }
-        
+        .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                focusedIndex = .list(0)
+            }
+        }
     }
     
     var favoriteStocksSection: some View {
@@ -115,6 +126,8 @@ struct MainView: View {
                     // Removed contentShape and onTapGesture to
                     // allow more generous and system-like tap behavior
                     StockCell(stock: stock)
+                        .accessibilityFocused($focusedIndex,
+                                              equals: .list(favorites.firstIndex(of: stock) ?? 0))
                         .contextMenu {
                             // The context menu should allow for the same functionality
                             // as swiping. This again mirrors system app functioning
@@ -219,7 +232,11 @@ struct MainView: View {
                               systemImage: "abc").tag(3)
                     }
                 } label: {
-                    Image(systemName: "arrow.up.arrow.down")
+                    // Using buttons here automatically adapts to
+                    // the .accessibilityShowButtonShapes setting
+                    Button { } label: {
+                        Image(systemName: "arrow.up.arrow.down")
+                    }
                 }
                 // VoiceOver uses this too, even though it's for largeContentViewer
                 .accessibilityShowsLargeContentViewer {

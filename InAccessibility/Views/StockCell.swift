@@ -32,14 +32,18 @@ struct TickerSymbol: ViewModifier {
 }
 
 struct StockCell: View {
-    
+
+    /// Formerly ContentSizeCategory
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize: DynamicTypeSize
+
     let stock: Stock
     
     var body: some View {
-        HStack {
-            HStack {
-                VStack(alignment: .leading) {
 
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+
+                VStack(alignment: .leading) {
                     Text(stock.shortName)
                         .font(.title3)
                         .bold()
@@ -49,25 +53,60 @@ struct StockCell: View {
                     Text(stock.name)
                         .foregroundStyle(.secondary)
                         .font(.system(.caption))
+
+
+                    StockGraph(showDetails: true, stock: stock)
+
+                    StockPrice(stock: stock)
+
                 }
 
-                Spacer()
-                Divider()
+            } else {
+
+                HStack {
+                    HStack {
+                        VStack(alignment: .leading) {
+
+                            Text(stock.shortName)
+                                .font(.title3)
+                                .bold()
+                                .modifier(TickerSymbol(name: stock.shortName))
+
+
+                            Text(stock.name)
+                                .foregroundStyle(.secondary)
+                                .font(.system(.caption))
+                        }
+
+                        Spacer()
+                        Divider()
+                    }
+                    // This keeps all names aligned even with extra long titles
+                    .frame(alignment: .leading)
+                    .alignmentGuide(.leading) { $0[.leading] }
+
+                    Spacer()
+
+                    StockGraph(showDetails: false, stock: stock)
+
+                    StockPrice(stock: stock)
+
+
+                }
+                .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 8))
+
             }
-            // This keeps all names aligned even with extra long titles
-            .frame(alignment: .leading)
-            .alignmentGuide(.leading) { $0[.leading] }
 
-            Spacer()
-
-            StockGraph(showDetails: false, stock: stock)
-
-            StockPrice(stock: stock)
-
-            
         }
-        .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 8))
-        
+        .accessibilityElement(children: .ignore)
+        .accessibilityRepresentation {
+            Group {
+                Text(stock.name)
+                Text(stock.shortName)
+                    .modifier(TickerSymbol(name: stock.shortName))
+                StockPrice(stock: stock)
+            }
+        }
     }
     
 }

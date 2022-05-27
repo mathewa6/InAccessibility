@@ -23,6 +23,9 @@ struct DetailView: View {
 
     @State var selectedAlertItem: AlertItem?
 
+    @AccessibilityFocusState
+    private var isTitleFocused: Bool
+
     let stock: Stock
     
     var body: some View {
@@ -56,6 +59,11 @@ struct DetailView: View {
                 })
             }
         }
+        .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                isTitleFocused = true
+            }
+        }
         .accessibilityAction(.escape) {
             presentationMode.wrappedValue.dismiss()
         }
@@ -73,6 +81,9 @@ struct DetailView: View {
             // likely to occur in other apps and keeping one primary
             // button aids clarity esp. for those with cognitive/focus impairment
             ToolbarItem(placement: .primaryAction) {
+
+                // Using buttons here automatically adapts to
+                // the .accessibilityShowButtonShapes setting
                 Button {
                     selectedAlertItem = .share
                 } label: {
@@ -95,9 +106,14 @@ struct DetailView: View {
                 Text(stock.name)
                     .font(.title2)
                     .bold()
+                    // This ensures the title is first focused
+                    // when the view first appears
+                    .accessibilityFocused($isTitleFocused)
+
                 Text(stock.shortName)
                     .font(.subheadline)
                     .modifier(TickerSymbol(name: stock.shortName))
+
 
                 Spacer()
 
@@ -133,14 +149,18 @@ struct DetailView: View {
             } label: {
                 Group {
                     if stock.favorite {
-                        Label("Unfavorite", systemImage: "star.slash")
+                        Label("Unfavorite",
+                              systemImage: "star.slash")
+
                     } else {
                         Label("Favorite", systemImage: "star")
                     }
                 }
-                    .font(.title2)
-                    .padding(.vertical)
-                    .frame(maxWidth: .infinity, alignment: .center)
+                .lineLimit(1)
+                .font(.headline)
+                .scaledToFit()
+                .padding(.vertical)
+                .frame(maxWidth: .infinity, alignment: .center)
             }
             .buttonStyle(.borderedProminent)
             .buttonBorderShape(.roundedRectangle)
