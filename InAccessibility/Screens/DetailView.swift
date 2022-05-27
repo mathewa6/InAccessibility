@@ -123,10 +123,21 @@ struct DetailView: View {
     
     var buttons: some View {
         VStack {
-            Button {
-                selectedAlertItem = .favorite
+            Button(role: stock.favorite ? .destructive : nil) {
+                if stock.favorite {
+                    // TODO:
+                    // IRL we would probably want to remove it from the model
+                } else {
+                    selectedAlertItem = .favorite
+                }
             } label: {
-                Label("Favorite", systemImage: "star")
+                Group {
+                    if stock.favorite {
+                        Label("Unfavorite", systemImage: "star.slash")
+                    } else {
+                        Label("Favorite", systemImage: "star")
+                    }
+                }
                     .font(.title2)
                     .padding(.vertical)
                     .frame(maxWidth: .infinity, alignment: .center)
