@@ -27,19 +27,35 @@ struct DetailView: View {
     
     var body: some View {
 
-        VStack(alignment: .leading) {
-            companyInfo
-            description
-            buttons
-        }
-        .padding(.horizontal)
-        .alert(item: $selectedAlertItem, content: { item in
-            if item == .share {
-                return Alert(title: Text("Thanks for sharing!"))
+        Group {
+            if verticalSizeClass == .compact {
+                HStack {
+                    companyInfo
+                    VStack {
+                        ScrollView {
+                            description
+                        }
+                        buttons
+                    }
+                }
             } else {
-                return Alert(title: Text("Thanks for favoriting (but not really)!"))
+                VStack(alignment: .leading) {
+                    ScrollView {
+                        companyInfo
+                        description
+                    }
+                    buttons
+                }
+                .padding(.horizontal)
+                .alert(item: $selectedAlertItem, content: { item in
+                    if item == .share {
+                        return Alert(title: Text("Thanks for sharing!"))
+                    } else {
+                        return Alert(title: Text("Thanks for favoriting (but not really)!"))
+                    }
+                })
             }
-        })
+        }
         .accessibilityAction(.escape) {
             presentationMode.wrappedValue.dismiss()
         }
@@ -50,7 +66,7 @@ struct DetailView: View {
             selectedAlertItem = .favorite
         }
         .toolbar {
-            // Presenting a share button and a favorite at the bottom
+            // Presenting a share button and a favorite (together) at the bottom
             // isn't platform convention and hence puts the user in a
             // position of choice each time they view the page
             // Moving the share button to a toolbar where it is more
@@ -60,9 +76,13 @@ struct DetailView: View {
                 Button {
                     selectedAlertItem = .share
                 } label: {
-                    Label("Share", systemImage: "square.and.arrow.up")
+                    Image(systemName: "square.and.arrow.up")
                 }
-
+                // VoiceOver uses this too, even though it's for largeContentViewer
+                .accessibilityShowsLargeContentViewer {
+                    Label("Share", systemImage: "square.and.arrow.up")
+                        .labelStyle(.titleAndIcon)
+                }
             }
         }
 
@@ -71,16 +91,19 @@ struct DetailView: View {
     var companyInfo: some View {
         HStack {
             VStack(alignment: .leading) {
+                
                 Text(stock.name)
                     .font(.title2)
                     .bold()
                 Text(stock.shortName)
                     .font(.subheadline)
+                    .modifier(TickerSymbol(name: stock.shortName))
 
                 Spacer()
 
                 StockGraph(showDetails: true, stock: stock)
-                
+                    .frame(maxWidth: .infinity, alignment: .center)
+
                 Spacer()
 
 
@@ -119,5 +142,6 @@ struct DetailView: View {
 struct DetailView_Previews: PreviewProvider {
     static var previews: some View {
         DetailView(stock: .example())
+            .previewInterfaceOrientation(.landscapeLeft)
     }
 }

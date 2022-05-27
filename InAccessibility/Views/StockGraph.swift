@@ -83,14 +83,7 @@ struct StockGraph: View {
 
     var body: some View {
         ZStack(alignment: .leading) {
-
-            // Present an image representation of overall trend
-            // to supplement custom color choices
-            Image(systemName: stock.goingUp ? "arrow.up.square" : "arrow.down.square")
-                .font(.callout)
-                .foregroundStyle(.tertiary)
-
-
+            
             Group {
                 StockGraphPath(points: graphData)
                     .stroke(stock.goingUp ? .green : .red, lineWidth: 3)

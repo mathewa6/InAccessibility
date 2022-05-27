@@ -30,6 +30,7 @@ struct MainView: View {
     
     @State private var showCustomize: Bool = false
     @State private var showAddStock: Bool = false
+    @State var showInfo = false
 
     /// The user chosen sort order for stocks
     @State private var menuSortSelection: Int = 0
@@ -79,7 +80,8 @@ struct MainView: View {
             List {
                 favoriteStocksSection
             }
-            .navigationTitle("Watchlists")
+            .listStyle(.insetGrouped)
+            .navigationTitle("Watchlist")
             .toolbar(content: {
                 toolbarItems
             })
@@ -88,6 +90,9 @@ struct MainView: View {
                 
                 lastUpdatedTimestamp = Date()
             }
+
+            // An instructional placeholder for iPad userss
+            Text("Select a stock for price and updates.")
         }
         // TODO: Allow sorting in increasing and decreasing orders
         // Picker doesn't allow re-tapping to change a value. C'mon SwiftUI...
@@ -97,6 +102,7 @@ struct MainView: View {
                                   stockB: $1,
                                   isIncreasing: true) }
         }
+        
     }
     
     var favoriteStocksSection: some View {
@@ -115,7 +121,7 @@ struct MainView: View {
                             // but also allows those with mild tremors to not
                             // need to swipe to unfavorite
                             Button {
-
+                                showInfo = true
                             } label: {
                                 Label("Info", systemImage: "info.circle")
                             }
@@ -133,6 +139,9 @@ struct MainView: View {
                         }
 
 
+                }
+                .alert(isPresented: $showInfo) {
+                    Alert(title: Text(stock.name), message: Text("The stock price for \(stock.name) (\(stock.shortName)) is \(stock.stockPrice)."), dismissButton: .cancel())
                 }
                 .swipeActions(allowsFullSwipe: true) {
                     // If we only wanted to support VoiceOver
@@ -168,6 +177,8 @@ struct MainView: View {
                 // the reader. The original copy stated what
                 // *should* happen, but is ambiguous as to
                 // the current state.
+                // Secondly, the two largest accessibility sizes
+                // cause layout oddities, this check for the TypeSize addresses that
                 if dynamicTypeSize >= .accessibility4 {
                     
                     // For larger accessibility sizes, spacers
@@ -208,9 +219,13 @@ struct MainView: View {
                               systemImage: "abc").tag(3)
                     }
                 } label: {
-                    Label("Sort", systemImage: "arrow.up.arrow.down")
+                    Image(systemName: "arrow.up.arrow.down")
                 }
-                
+                // VoiceOver uses this too, even though it's for largeContentViewer
+                .accessibilityShowsLargeContentViewer {
+                    Label("Sort", systemImage: "arrow.up.arrow.down")
+                        .labelStyle(.titleAndIcon)
+                }
             }
             
             ToolbarItemGroup(placement: .bottomBar) {

@@ -7,12 +7,34 @@
 
 import SwiftUI
 
+
+/// A simple modifier to be used anywhere a Ticker symbol is presented
+/// It slows down, and spells out Text content
+struct TickerSymbol: ViewModifier {
+
+    let name: String
+
+    func body(content: Content) -> some View {
+        return content
+            .accessibilityRepresentation(representation: {
+                // Lower cases the name so VO doesn't read "Cap A" instead of "A"
+                Text(name.lowercased())
+                    // We always want ticker symbol spelt out
+                    .speechSpellsOutCharacters(true)
+                    // Some traded assets can include ^% in the name IRL
+                    .speechAlwaysIncludesPunctuation(true)
+                    // Drop the pitch so the listener is aware that this is a symbol
+                    .speechAdjustedPitch(-0.25)
+            })
+
+    }
+
+}
+
 struct StockCell: View {
     
     let stock: Stock
     
-    @State var showInfo = false
-
     var body: some View {
         HStack {
             HStack {
@@ -21,6 +43,8 @@ struct StockCell: View {
                     Text(stock.shortName)
                         .font(.title3)
                         .bold()
+                        .modifier(TickerSymbol(name: stock.shortName))
+
 
                     Text(stock.name)
                         .foregroundStyle(.secondary)
@@ -34,32 +58,16 @@ struct StockCell: View {
             .frame(alignment: .leading)
             .alignmentGuide(.leading) { $0[.leading] }
 
+            Spacer()
 
-            HStack {
-
-                StockGraph(showDetails: false, stock: stock)
-
-            }
-            
+            StockGraph(showDetails: false, stock: stock)
 
             StockPrice(stock: stock)
 
-            // Replace the tappable Image with Buttons
-            // for "free" accessibility modifiers like traits
-            Button {
-                showInfo = true
-            } label: {
-                Label("Info", systemImage: "info.circle")
-                    .font(.body)
-                    .labelStyle(.iconOnly)
-            }
-            .foregroundStyle(.secondary)
-
+            
         }
         .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 8))
-        .alert(isPresented: $showInfo) {
-            Alert(title: Text(stock.name), message: Text("The stock price for \(stock.name) (\(stock.shortName)) is \(stock.stockPrice)."), dismissButton: .cancel())
-        }
+        
     }
     
 }
