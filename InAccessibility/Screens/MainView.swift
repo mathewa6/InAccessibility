@@ -39,8 +39,11 @@ struct MainView: View {
     /// The user chosen sort order for stocks
     @State private var menuSortSelection: Int = 0
 
+    // --- Accessibility Helpers ---
+    // These two help keep user focus on a cell between navigation pushes
     @AccessibilityFocusState
     private var focusedIndex: StockFocusIndex?
+    @State private var lastSelectedIndex: Int?
 
     
     // --- Model ---
@@ -84,8 +87,21 @@ struct MainView: View {
     var body: some View {
         
         NavigationView {
+
             List {
                 favoriteStocksSection
+            }
+            // This is the hackiest workaround, but it fixes a MAJOR annoyance
+            // In the default iOS Stocks app (and this one),
+            // tap a stock far down the MainView list
+            // and on returning to MainView, you are returned to the first element...
+            // By storing the accessibilityFocusState and re-setting it here,
+            // the user can continue from their selected cell
+            // This is an unolved mystery as it doen't occur with some list cells
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.33) {
+                    focusedIndex = .list(self.lastSelectedIndex ?? 0)
+                }
             }
             .listStyle(.insetGrouped)
             .navigationTitle("Watchlist")
@@ -109,11 +125,6 @@ struct MainView: View {
                                   stockB: $1,
                                   isIncreasing: true) }
         }
-        .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                focusedIndex = .list(0)
-            }
-        }
     }
     
     var favoriteStocksSection: some View {
@@ -126,6 +137,7 @@ struct MainView: View {
                     // Removed contentShape and onTapGesture to
                     // allow more generous and system-like tap behavior
                     StockCell(stock: stock)
+                        .accessibilitySortPriority(1)
                         .accessibilityFocused($focusedIndex,
                                               equals: .list(favorites.firstIndex(of: stock) ?? 0))
                         .contextMenu {
@@ -149,6 +161,9 @@ struct MainView: View {
                                 Label("Unfavorite", systemImage: "star.slash")
                             }
 
+                        }
+                        .onDisappear() {
+                            self.lastSelectedIndex = favorites.firstIndex(of: stock)
                         }
 
 

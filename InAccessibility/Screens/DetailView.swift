@@ -23,9 +23,6 @@ struct DetailView: View {
 
     @State var selectedAlertItem: AlertItem?
 
-    @AccessibilityFocusState
-    private var isTitleFocused: Bool
-
     let stock: Stock
     
     var body: some View {
@@ -57,11 +54,6 @@ struct DetailView: View {
                         return Alert(title: Text("Thanks for favoriting (but not really)!"))
                     }
                 })
-            }
-        }
-        .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                isTitleFocused = true
             }
         }
         .accessibilityAction(.escape) {
@@ -100,34 +92,44 @@ struct DetailView: View {
     }
     
     var companyInfo: some View {
-        HStack {
-            VStack(alignment: .leading) {
-                
-                Text(stock.name)
-                    .font(.title2)
-                    .bold()
+
+        VStack(alignment: .leading) {
+
+            HStack {
+
+                VStack(alignment: .leading) {
+                    Text(stock.name)
+                        .font(.title2)
+                        .bold()
+                        .accessibilitySortPriority(3)
                     // This ensures the title is first focused
                     // when the view first appears
-                    .accessibilityFocused($isTitleFocused)
 
-                Text(stock.shortName)
-                    .font(.subheadline)
-                    .modifier(TickerSymbol(name: stock.shortName))
-
-
-                Spacer()
-
-                StockGraph(showDetails: true, stock: stock)
-                    .frame(maxWidth: .infinity, alignment: .center)
+                    Text(stock.shortName)
+                        .font(.subheadline)
+                        .modifier(TickerSymbol(name: stock.shortName))
+                        .accessibilitySortPriority(2)
+                }
 
                 Spacer()
 
-
+                StockPrice(stock: stock)
+                    .accessibilitySortPriority(1)
             }
-            
-//            0, 136, 15
-//            221, 51, 34
+            .accessibilityElement(children: .combine)
+
+            Spacer()
+
+            StockGraph(showDetails: true, stock: stock)
+                .frame(maxWidth: .infinity, alignment: .center)
+
+            Spacer()
+
+
+            //            0, 136, 15
+            //            221, 51, 34
         }
+        
     }
     
     var description: some View {
@@ -173,6 +175,6 @@ struct DetailView: View {
 struct DetailView_Previews: PreviewProvider {
     static var previews: some View {
         DetailView(stock: .example())
-            .previewInterfaceOrientation(.landscapeLeft)
+            .previewInterfaceOrientation(.portraitUpsideDown)
     }
 }
