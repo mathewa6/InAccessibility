@@ -112,23 +112,25 @@ struct StockGraph_Previews: PreviewProvider {
 
 
 // A rough outline of audio graph usage
-// TODO: (unfortunately I'm out of time to make the graph work fully)
-extension StockGraph: AXChartDescriptorRepresentable {
+extension StockGraph: AXChartDescriptorRepresentable, StockPricePresentable {
 
     func makeChartDescriptor() -> AXChartDescriptor {
+
+        
         let min = graphData.min() ?? 0.0
         let max = graphData.max() ?? 0.0
 
-        let xAxis = AXCategoricalDataAxisDescriptor(
+        let xAxis = AXNumericDataAxisDescriptor(
             title: "Time",
-            categoryOrder: points.map { "\($0)" }
-        )
+            range: 0.0...Double(points.count),
+            gridlinePositions: []
+        ) { value in "\(value)" }
 
         let yAxis = AXNumericDataAxisDescriptor(
             title: "Price",
             range: min...max,
             gridlinePositions: []
-        ) { value in "\(value) points" }
+        ) { value in "\(currencyFormatter.string(from: NSNumber(value: value)) ?? "$\(value)")" }
 
         let series = AXDataSeriesDescriptor(
             name: "Stock Price",

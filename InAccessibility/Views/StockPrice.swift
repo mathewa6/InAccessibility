@@ -7,20 +7,29 @@
 
 import SwiftUI
 
-struct StockPrice: View {
+protocol StockPricePresentable {
+    var currencyFormatter: NumberFormatter { get }
+}
+
+extension StockPricePresentable {
+    var currencyFormatter: NumberFormatter {
+        {
+            let formatter = NumberFormatter()
+            formatter.numberStyle = .currency
+            formatter.locale = .autoupdatingCurrent
+
+            return formatter
+        }()
+    }
+}
+
+struct StockPrice: View, StockPricePresentable {
 
     @Environment(\.dynamicTypeSize) var dynamicTypeSize: DynamicTypeSize
 
     @Environment(\.accessibilityDifferentiateWithoutColor) var diffWithoutColor: Bool
 
     let stock: Stock
-    let currencyFormatter: NumberFormatter = {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.locale = .autoupdatingCurrent
-
-        return formatter
-    }()
 
     var value: String {
         currencyFormatter
